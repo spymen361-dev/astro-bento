@@ -89,7 +89,7 @@ export const BentoGrid = () => {
               key={project.title}
               delay={i * 0.08}
               className={getSpanClasses(i)}
-              onClick={() => setSelectedProject(project)}
+              onClick={() => navigate(`/project/${project.title.toLowerCase().replace(/\s+/g, "-")}`)}
             >
               <GridItem className="h-full cursor-pointer">
                 <img
