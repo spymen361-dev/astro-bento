@@ -4,18 +4,13 @@ import { Link } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 import { LiveClock } from "./LiveClock";
 import { AnimatedCard } from "./AnimatedCard";
-import { ProjectDetailModal, type ProjectData } from "./ProjectDetailModal";
+import { PinnedRepos } from "./PinnedRepos";
 import avatar from "@/assets/avatar.png";
 
-interface SidebarProps {
-  projects: ProjectData[];
-}
-
-export const Sidebar = ({ projects }: SidebarProps) => {
+export const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<"info" | "contact">("info");
   const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
 
   const handleCopy = () => {
     navigator.clipboard.writeText("contact@jkane.co");
@@ -91,30 +86,8 @@ export const Sidebar = ({ projects }: SidebarProps) => {
             </div>
           </AnimatedCard>
 
-          {/* Featured Work */}
-          <AnimatedCard delay={0.2}>
-            <div className="bento-card-static p-6 flex flex-col gap-5">
-              {projects.map((project, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelectedProject(project)}
-                  className="group flex items-start gap-4 text-left w-full border-0"
-                >
-                  <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted shrink-0">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="text-sm font-semibold leading-tight">{project.title}</h4>
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-3">{project.description}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </AnimatedCard>
+          {/* Pinned Repos */}
+          <PinnedRepos />
         </>
       )}
 
@@ -186,11 +159,6 @@ export const Sidebar = ({ projects }: SidebarProps) => {
         </div>
       </div>
 
-      <ProjectDetailModal
-        project={selectedProject}
-        open={!!selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
     </aside>
   );
 };

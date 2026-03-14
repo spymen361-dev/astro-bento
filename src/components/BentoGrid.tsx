@@ -1,12 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Boxes, Search } from "lucide-react";
 import { GridItem } from "./GridItem";
 import { AnimatedCard } from "./AnimatedCard";
-import { ProjectDetailModal, type ProjectData } from "./ProjectDetailModal";
 import { gridProjects, allTags } from "@/data/projects";
 
 export const BentoGrid = () => {
-  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -89,7 +89,7 @@ export const BentoGrid = () => {
               key={project.title}
               delay={i * 0.08}
               className={getSpanClasses(i)}
-              onClick={() => setSelectedProject(project)}
+              onClick={() => navigate(`/project/${project.title.toLowerCase().replace(/\s+/g, "-")}`)}
             >
               <GridItem className="h-full cursor-pointer">
                 <img
@@ -109,11 +109,6 @@ export const BentoGrid = () => {
         </div>
       )}
 
-      <ProjectDetailModal
-        project={selectedProject}
-        open={!!selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
     </section>
   );
 };
