@@ -7,6 +7,7 @@ export interface ProjectData {
   description: string;
   image: string;
   tags: string[];
+  date?: string;
   longDescription?: string;
   gallery?: string[];
   github?: string;

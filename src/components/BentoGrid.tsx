@@ -1,27 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Boxes, Search, ArrowDownAZ, ArrowUpAZ, SortAsc } from "lucide-react";
+import { Boxes, Search, Clock, ArrowDownAZ } from "lucide-react";
 import { GridItem } from "./GridItem";
 import { AnimatedCard } from "./AnimatedCard";
 import { gridProjects, allTags } from "@/data/projects";
 
-type SortOption = "default" | "a-z" | "z-a";
+type SortOption = "time" | "name";
 
 export const BentoGrid = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [sort, setSort] = useState<SortOption>("default");
+  const [sort, setSort] = useState<SortOption>("time");
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-  };
-
-  const cycleSort = () => {
-    setSort((prev) =>
-      prev === "default" ? "a-z" : prev === "a-z" ? "z-a" : "default"
     );
   };
 
@@ -37,9 +31,8 @@ export const BentoGrid = () => {
       return matchesSearch && matchesTags;
     })
     .sort((a, b) => {
-      if (sort === "a-z") return a.title.localeCompare(b.title);
-      if (sort === "z-a") return b.title.localeCompare(a.title);
-      return 0;
+      if (sort === "name") return a.title.localeCompare(b.title);
+      return (b.date ?? "").localeCompare(a.date ?? "");
     });
 
   const getSpanClasses = (i: number) => {
@@ -61,18 +54,30 @@ export const BentoGrid = () => {
           <Boxes className="w-5 h-5 text-primary" />
           Playground
         </h2>
-        <button
-          onClick={cycleSort}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
-            sort !== "default"
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-          }`}
-          title={`Sort: ${sort === "default" ? "Default" : sort === "a-z" ? "A → Z" : "Z → A"}`}
-        >
-          {sort === "a-z" ? <ArrowDownAZ className="w-3.5 h-3.5" /> : sort === "z-a" ? <ArrowUpAZ className="w-3.5 h-3.5" /> : <SortAsc className="w-3.5 h-3.5" />}
-          {sort === "default" ? "Sort" : sort === "a-z" ? "A → Z" : "Z → A"}
-        </button>
+        <div className="flex items-center gap-1 rounded-full bg-muted/50 border border-border p-0.5">
+          <button
+            onClick={() => setSort("time")}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+              sort === "time"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Clock className="w-3 h-3" />
+            Time
+          </button>
+          <button
+            onClick={() => setSort("name")}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+              sort === "name"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ArrowDownAZ className="w-3 h-3" />
+            Name
+          </button>
+        </div>
       </header>
 
       <div className="mb-6 space-y-3">
