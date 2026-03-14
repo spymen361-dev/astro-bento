@@ -109,11 +109,6 @@ export const BentoGrid = () => {
         </div>
       )}
 
-      <ProjectDetailModal
-        project={selectedProject}
-        open={!!selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
     </section>
   );
 };
