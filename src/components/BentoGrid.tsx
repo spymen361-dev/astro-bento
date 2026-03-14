@@ -73,6 +73,7 @@ export const BentoGrid = () => {
           {sort === "a-z" ? <ArrowDownAZ className="w-3.5 h-3.5" /> : sort === "z-a" ? <ArrowUpAZ className="w-3.5 h-3.5" /> : <SortAsc className="w-3.5 h-3.5" />}
           {sort === "default" ? "Sort" : sort === "a-z" ? "A → Z" : "Z → A"}
         </button>
+      </header>
 
       <div className="mb-6 space-y-3">
         <div className="relative">
