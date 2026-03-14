@@ -1,77 +1,119 @@
-import { Boxes } from "lucide-react";
+import { useState } from "react";
+import { Boxes, Search } from "lucide-react";
 import { GridItem } from "./GridItem";
-import projectRetro from "@/assets/project-retro.jpg";
-import projectLogo from "@/assets/project-logo.jpg";
-import projectTypography from "@/assets/project-typography.jpg";
-import projectTypeDesign from "@/assets/project-type-design.jpg";
-import projectDreamscape from "@/assets/project-dreamscape.jpg";
-import projectGradient from "@/assets/project-gradient.jpg";
+import { AnimatedCard } from "./AnimatedCard";
+import { ProjectDetailModal, type ProjectData } from "./ProjectDetailModal";
+import { gridProjects, allTags } from "@/data/projects";
 
 export const BentoGrid = () => {
+  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
+  const [search, setSearch] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const filtered = gridProjects.filter((p) => {
+    const matchesSearch =
+      !search ||
+      p.title.toLowerCase().includes(search.toLowerCase()) ||
+      p.description.toLowerCase().includes(search.toLowerCase());
+    const matchesTags =
+      selectedTags.length === 0 ||
+      selectedTags.some((t) => p.tags.includes(t));
+    return matchesSearch && matchesTags;
+  });
+
+  // Grid layout patterns for visual variety
+  const getSpanClasses = (i: number) => {
+    const patterns = [
+      "col-span-2 row-span-2",
+      "",
+      "row-span-2",
+      "col-span-2",
+      "col-span-2",
+      "",
+    ];
+    return patterns[i % patterns.length];
+  };
+
   return (
     <section className="flex-1 bento-card-static overflow-y-auto p-6 no-scrollbar">
-      <header className="flex justify-between items-center mb-6">
+      <header className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold flex items-center gap-2">
           <Boxes className="w-5 h-5 text-primary" />
           Playground
         </h2>
       </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[200px]">
-        {/* Large retro image */}
-        <GridItem className="col-span-2 row-span-2">
-          <img
-            src={projectRetro}
-            alt="Retro computer project"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      {/* Search & Tags */}
+      <div className="mb-6 space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search projects..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-muted/50 border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
-        </GridItem>
-
-        {/* Logo on black */}
-        <GridItem className="bg-foreground">
-          <img
-            src={projectLogo}
-            alt="Logo design"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </GridItem>
-
-        {/* Typography */}
-        <GridItem className="row-span-2">
-          <img
-            src={projectTypography}
-            alt="Typography project"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </GridItem>
-
-        {/* Type design */}
-        <GridItem className="col-span-2">
-          <img
-            src={projectTypeDesign}
-            alt="Type design"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </GridItem>
-
-        {/* Dreamscape */}
-        <GridItem className="col-span-2">
-          <img
-            src={projectDreamscape}
-            alt="Dreamscape branding"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </GridItem>
-
-        {/* Gradient sphere */}
-        <GridItem>
-          <img
-            src={projectGradient}
-            alt="Gradient artwork"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </GridItem>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {allTags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => toggleTag(tag)}
+              className={`tag-pill cursor-pointer transition-colors text-[10px] ${
+                selectedTags.includes(tag)
+                  ? "!bg-primary !text-primary-foreground !border-primary"
+                  : ""
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {filtered.length === 0 ? (
+        <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
+          No projects match your search.
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[200px]">
+          {filtered.map((project, i) => (
+            <AnimatedCard
+              key={project.title}
+              delay={i * 0.08}
+              className={getSpanClasses(i)}
+              onClick={() => setSelectedProject(project)}
+            >
+              <GridItem className="h-full cursor-pointer">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-background">{project.title}</h3>
+                    <p className="text-xs text-background/70">{project.tags.join(" · ")}</p>
+                  </div>
+                </div>
+              </GridItem>
+            </AnimatedCard>
+          ))}
+        </div>
+      )}
+
+      <ProjectDetailModal
+        project={selectedProject}
+        open={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </section>
   );
 };
