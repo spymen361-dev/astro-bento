@@ -1,16 +1,36 @@
+import { useState } from "react";
 import { Github, ExternalLink, Star } from "lucide-react";
-import { pinnedRepos } from "@/data/pinned-repos";
+import { repoTabs } from "@/data/pinned-repos";
 import { AnimatedCard } from "./AnimatedCard";
 
 export const PinnedRepos = () => {
+  const [activeTab, setActiveTab] = useState(0);
+
   return (
     <AnimatedCard delay={0.2}>
       <div className="bento-card-static p-5">
-        <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-          Pinned
-        </h4>
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Pinned
+          </h4>
+          <div className="flex gap-1">
+            {repoTabs.map((tab, i) => (
+              <button
+                key={tab.label}
+                onClick={() => setActiveTab(i)}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors cursor-pointer ${
+                  activeTab === i
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <ul className="space-y-0.5">
-          {pinnedRepos.map((repo) => (
+          {repoTabs[activeTab].repos.map((repo) => (
             <li key={repo.name}>
               <a
                 href={repo.url}
