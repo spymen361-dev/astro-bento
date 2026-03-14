@@ -6,7 +6,7 @@ import { AnimatedCard } from "./AnimatedCard";
 import { gridProjects, allTags } from "@/data/projects";
 
 export const BentoGrid = () => {
-  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
