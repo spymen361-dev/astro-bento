@@ -159,11 +159,6 @@ export const Sidebar = () => {
         </div>
       </div>
 
-      <ProjectDetailModal
-        project={selectedProject}
-        open={!!selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
     </aside>
   );
 };
