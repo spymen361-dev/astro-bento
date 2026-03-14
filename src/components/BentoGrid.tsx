@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Boxes, Search } from "lucide-react";
 import { GridItem } from "./GridItem";
 import { AnimatedCard } from "./AnimatedCard";
-import { ProjectDetailModal, type ProjectData } from "./ProjectDetailModal";
 import { gridProjects, allTags } from "@/data/projects";
 
 export const BentoGrid = () => {
