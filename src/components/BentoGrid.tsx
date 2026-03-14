@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Boxes, Search } from "lucide-react";
+import { Boxes, Search, ArrowDownAZ, ArrowUpAZ, SortAsc } from "lucide-react";
 import { GridItem } from "./GridItem";
 import { AnimatedCard } from "./AnimatedCard";
 import { gridProjects, allTags } from "@/data/projects";
+
+type SortOption = "default" | "a-z" | "z-a";
 
 export const BentoGrid = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [sort, setSort] = useState<SortOption>("default");
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -16,16 +19,28 @@ export const BentoGrid = () => {
     );
   };
 
-  const filtered = gridProjects.filter((p) => {
-    const matchesSearch =
-      !search ||
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.description.toLowerCase().includes(search.toLowerCase());
-    const matchesTags =
-      selectedTags.length === 0 ||
-      selectedTags.some((t) => p.tags.includes(t));
-    return matchesSearch && matchesTags;
-  });
+  const cycleSort = () => {
+    setSort((prev) =>
+      prev === "default" ? "a-z" : prev === "a-z" ? "z-a" : "default"
+    );
+  };
+
+  const filtered = gridProjects
+    .filter((p) => {
+      const matchesSearch =
+        !search ||
+        p.title.toLowerCase().includes(search.toLowerCase()) ||
+        p.description.toLowerCase().includes(search.toLowerCase());
+      const matchesTags =
+        selectedTags.length === 0 ||
+        selectedTags.some((t) => p.tags.includes(t));
+      return matchesSearch && matchesTags;
+    })
+    .sort((a, b) => {
+      if (sort === "a-z") return a.title.localeCompare(b.title);
+      if (sort === "z-a") return b.title.localeCompare(a.title);
+      return 0;
+    });
 
   const getSpanClasses = (i: number) => {
     const patterns = [
