@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Boxes, Search } from "lucide-react";
+import { Boxes, Search, Wrench } from "lucide-react";
 import { GridItem } from "./GridItem";
 import { AnimatedCard } from "./AnimatedCard";
 import { gridProjects, allTags } from "@/data/projects";
+import { tools } from "@/data/tools";
 
 export const BentoGrid = () => {
   const navigate = useNavigate();
@@ -27,7 +28,10 @@ export const BentoGrid = () => {
     return matchesSearch && matchesTags;
   });
 
-  // Grid layout patterns for visual variety
+  const filteredTools = tools.filter((t) =>
+    !search || t.title.toLowerCase().includes(search.toLowerCase()) || t.description.toLowerCase().includes(search.toLowerCase())
+  );
+
   const getSpanClasses = (i: number) => {
     const patterns = [
       "col-span-2 row-span-2",
@@ -55,7 +59,7 @@ export const BentoGrid = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search projects..."
+            placeholder="Search projects & tools..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-muted/50 border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -78,11 +82,45 @@ export const BentoGrid = () => {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
-        <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
-          No projects match your search.
+      {/* Tools Section */}
+      {filteredTools.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+            <Wrench className="w-3.5 h-3.5" />
+            Tools
+          </h3>
+          <div className="grid grid-cols-3 gap-3">
+            {filteredTools.map((tool, i) => (
+              <AnimatedCard
+                key={tool.id}
+                delay={i * 0.06}
+                onClick={() => navigate(`/tool/${tool.id}`)}
+              >
+                <div className="bento-card p-4 cursor-pointer h-full flex flex-col gap-2">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `hsl(${tool.color} / 0.12)` }}
+                  >
+                    <tool.icon
+                      className="w-4 h-4"
+                      style={{ color: `hsl(${tool.color})` }}
+                    />
+                  </div>
+                  <h4 className="text-sm font-semibold">{tool.title}</h4>
+                  <p className="text-xs text-muted-foreground">{tool.description}</p>
+                </div>
+              </AnimatedCard>
+            ))}
+          </div>
         </div>
-      ) : (
+      )}
+
+      {/* Projects Grid */}
+      {filtered.length === 0 && filteredTools.length === 0 ? (
+        <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
+          No results match your search.
+        </div>
+      ) : filtered.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[200px]">
           {filtered.map((project, i) => (
             <AnimatedCard
@@ -107,8 +145,7 @@ export const BentoGrid = () => {
             </AnimatedCard>
           ))}
         </div>
-      )}
-
+      ) : null}
     </section>
   );
 };
