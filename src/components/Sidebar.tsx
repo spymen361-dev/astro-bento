@@ -4,18 +4,13 @@ import { Link } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 import { LiveClock } from "./LiveClock";
 import { AnimatedCard } from "./AnimatedCard";
-import { ProjectDetailModal, type ProjectData } from "./ProjectDetailModal";
+import { PinnedRepos } from "./PinnedRepos";
 import avatar from "@/assets/avatar.png";
 
-interface SidebarProps {
-  projects: ProjectData[];
-}
-
-export const Sidebar = ({ projects }: SidebarProps) => {
+export const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<"info" | "contact">("info");
   const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
 
   const handleCopy = () => {
     navigator.clipboard.writeText("contact@jkane.co");
